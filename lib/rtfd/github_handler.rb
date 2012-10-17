@@ -1,23 +1,27 @@
+require 'json'
 class Rtfd::GithubHandler
-  def handle
+  def handle params
     payload = JSON.parse(params[:payload])
-    puts "I got some JSON from github: #{push.inspect}"
-    repo = Rtfd.repos.find{|repo| repo.first==payload[:repository][:name] and 'refs/heads/master'==payload[:ref]}
-    send repo[1]['with'], repo if repo
+    $stdout.puts "I got some JSON from github: #{payload.inspect}"
+    repo = Rtfd.repos.find{|repo| repo.first==payload['repository']['name'] and 'refs/heads/master'==payload['ref']}
+    update repo, payload if repo
   end
 
-  def pull repo
-    puts "Pulling #{repo.first}"
-    if Dir.exist?("repos/#{repo.first}")
-      system "cd repos/#{repo.first}; git pull; yard doc;"
-    else
-      puts "Seems there is no repo, lets clone it!"
+  def update repo, payload
+    if payload['forced'] or !Dir.exist?("#{Rtfd.repos_path}/#{repo.first}")
       clone repo
+    else
+      pull repo
     end
   end
 
+  def pull repo
+    $stdout.puts "Pulling #{repo.first}"
+    system "cd #{Rtfd.repos_path}/#{repo.first}; git pull; yard doc;"
+  end
+
   def clone repo
-    puts "Clonning #{repo.first}"
-    system "cd repos; rm -rf #{repo.first}/; git clone #{repo[1]['uri']}; cd #{repo.first}; yard doc;"
+    $stdout.puts "Clonning #{repo.first}"
+    system "cd #{Rtfd.repos_path}; rm -rf #{repo.first}; git clone #{repo[1]}; cd #{repo.first}; yard doc;"
   end
 end

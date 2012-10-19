@@ -27,6 +27,8 @@ The simple example of this file
       sinatra: git://github.com/sinatra/sinatra.git
       yard: git://github.com/lsegal/yard.git
 
+Go to your github repository admin page, click Service Hooks menu item and add "your_domain.com/github_hook" to webhook urls.
+
 You can use Rtfd::Application in you application now!
 
 Check Simple demo application that uses rtfd: https://github.com/BrandyMint/rtfd_demo_app

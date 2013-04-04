@@ -1,3 +1,5 @@
+require 'yaml'
+
 module Rtfd
   def self.repos_path
     @repos_path ||= self.load_settings[0]
